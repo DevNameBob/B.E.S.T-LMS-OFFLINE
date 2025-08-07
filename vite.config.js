@@ -4,6 +4,7 @@ import tailwindcss from 'tailwindcss';
 import autoprefixer from 'autoprefixer';
 
 export default defineConfig({
+  base: '/B.E.S.T-LMS-OFFLINE/',
   plugins: [react()],
   css: {
     postcss: {
