@@ -10,6 +10,10 @@ import AssessmentBuilderModal from '../modals/AssessmentBuilderModal';
 
 const USE_BACKEND = false;
 
+/**
+ * Rich editor for creating or editing a chapter.
+ * Includes title, summary, XP reward, content editor, and assessment builder.
+ */
 export default function ChapterEditor({ onSave, initialData = {} }) {
   const [title, setTitle] = useState(initialData.title || '');
   const [summary, setSummary] = useState(initialData.summary || '');
@@ -19,6 +23,7 @@ export default function ChapterEditor({ onSave, initialData = {} }) {
 
   const isEditing = !!initialData?.title;
 
+  // 🧠 TipTap Editor Setup
   const editor = useEditor({
     extensions: [
       StarterKit.configure({ bulletList: { keepMarks: true }, heading: { levels: [1, 2, 3] } }),
@@ -31,6 +36,7 @@ export default function ChapterEditor({ onSave, initialData = {} }) {
     content: initialData.content || '<p>Start writing your chapter...</p>',
   });
 
+  // 🗂️ Load draft from localStorage if creating new
   useEffect(() => {
     const saved = localStorage.getItem('chapterDraft');
     if (saved && !isEditing && editor) {
@@ -43,6 +49,7 @@ export default function ChapterEditor({ onSave, initialData = {} }) {
     }
   }, [editor]);
 
+  // 💾 Auto-save draft to localStorage
   useEffect(() => {
     if (!isEditing) {
       const draft = {
@@ -56,6 +63,7 @@ export default function ChapterEditor({ onSave, initialData = {} }) {
     }
   }, [title, summary, xp, questions, editor?.getHTML()]);
 
+  // ✅ Submit handler
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -79,6 +87,7 @@ export default function ChapterEditor({ onSave, initialData = {} }) {
       localStorage.removeItem('chapterDraft');
     }
 
+    // 🔄 Reset form
     setTitle('');
     setSummary('');
     setXp(10);
@@ -88,6 +97,7 @@ export default function ChapterEditor({ onSave, initialData = {} }) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      {/* 📝 Title Input */}
       <input
         type="text"
         placeholder="Chapter Title"
@@ -97,6 +107,7 @@ export default function ChapterEditor({ onSave, initialData = {} }) {
         required
       />
 
+      {/* 📄 Summary Input */}
       <textarea
         placeholder="Chapter Summary (what learners should expect)"
         value={summary}
@@ -106,6 +117,7 @@ export default function ChapterEditor({ onSave, initialData = {} }) {
         required
       />
 
+      {/* 🧮 XP Input */}
       <div className="flex items-center gap-2">
         <label className="text-sm font-medium">XP Reward:</label>
         <input
@@ -118,8 +130,9 @@ export default function ChapterEditor({ onSave, initialData = {} }) {
         <span className="text-sm text-gray-500">XP awarded on completion</span>
       </div>
 
-      {/* Toolbar */}
+      {/* 🛠️ Editor Toolbar */}
       <div className="space-y-2 border-b pb-3">
+        {/* Font Controls */}
         <div className="flex flex-wrap gap-2 items-center">
           <span className="font-semibold text-gray-700 w-20">Font</span>
           <button type="button" onClick={() => editor.chain().focus().toggleBold().run()} className="btn">Bold</button>
@@ -130,6 +143,7 @@ export default function ChapterEditor({ onSave, initialData = {} }) {
           <button type="button" onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()} className="btn">H3</button>
         </div>
 
+        {/* Color Controls */}
         <div className="flex flex-wrap gap-2 items-center">
           <span className="font-semibold text-gray-700 w-20">Color</span>
           <button type="button" onClick={() => editor.chain().focus().setColor('#e11d48').run()} className="btn text-rose-600">Red</button>
@@ -137,6 +151,7 @@ export default function ChapterEditor({ onSave, initialData = {} }) {
           <button type="button" onClick={() => editor.chain().focus().setHighlight().run()} className="btn bg-yellow-200">Highlight</button>
         </div>
 
+        {/* Layout Controls */}
         <div className="flex flex-wrap gap-2 items-center">
           <span className="font-semibold text-gray-700 w-20">Layout</span>
           <button type="button" onClick={() => editor.chain().focus().setTextAlign('left').run()} className="btn">Left</button>
@@ -145,6 +160,7 @@ export default function ChapterEditor({ onSave, initialData = {} }) {
           <button type="button" onClick={() => editor.chain().focus().toggleBlockquote().run()} className="btn">Quote</button>
         </div>
 
+        {/* Media Controls */}
         <div className="flex flex-wrap gap-2 items-center">
           <span className="font-semibold text-gray-700 w-20">Media</span>
           <button
@@ -167,10 +183,12 @@ export default function ChapterEditor({ onSave, initialData = {} }) {
         </div>
       </div>
 
+      {/* ✏️ Rich Text Editor */}
       <div className="border rounded p-2 bg-white">
         <EditorContent editor={editor} />
       </div>
 
+      {/* 📋 Assessment Section */}
       <div className="mt-6">
         <h3 className="text-md font-semibold">📋 Chapter Assessment</h3>
         <button
@@ -181,6 +199,7 @@ export default function ChapterEditor({ onSave, initialData = {} }) {
           ✍️ Edit Assessment
         </button>
 
+        {/* Preview of added questions */}
         {questions.length > 0 && (
           <ul className="mt-2 text-sm text-gray-700 list-disc pl-4">
             {questions.map((q, idx) => (
@@ -189,6 +208,7 @@ export default function ChapterEditor({ onSave, initialData = {} }) {
           </ul>
         )}
 
+        {/* 🧩 Modal for building assessment */}
         <AssessmentBuilderModal
           open={showAssessmentModal}
           onClose={() => setShowAssessmentModal(false)}
@@ -197,6 +217,7 @@ export default function ChapterEditor({ onSave, initialData = {} }) {
         />
       </div>
 
+      {/* 💾 Save Button */}
       <button
         type="submit"
         className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700"

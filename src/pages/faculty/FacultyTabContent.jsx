@@ -5,13 +5,14 @@
 // Tabs are restricted based on role-based access.
 // ==============================
 
-// 📦 Tab Components
 import DashboardTab from './tabs/DashboardTab';
 import AnnouncementsTab from './tabs/AnnouncementsTab';
 import ManageLearnersTab from './tabs/ManageLearnersTab';
 import ManageLessonsTab from './tabs/ManageLessonsTab';
 import ManageFacultyTab from './tabs/ManageFacultyTab';
 import ManageLmsTab from './tabs/ManageLmsTab';
+
+import styles from './FacultyTabContent.module.css';
 
 /**
  * @param {string} activeTab - Currently selected tab key
@@ -48,7 +49,7 @@ export default function FacultyTabContent({ activeTab, role }) {
 
   // 🔒 Fallback for unauthorized access
   return (
-    <div className="p-4 text-center text-gray-500">
+    <div className={styles.unauthorizedMessage}>
       🔒 You don’t have access to this section.
       <br />
       Required role: <strong>{getRequiredRoles(activeTab)}</strong>

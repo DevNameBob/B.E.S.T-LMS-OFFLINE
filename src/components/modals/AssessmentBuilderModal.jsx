@@ -1,42 +1,47 @@
 import React, { useState, useEffect } from 'react';
+import styles from './Modal.module.css'; // Optional shared styles
 
 const questionTypes = ['multipleChoice', 'written', 'scenario'];
 
+/**
+ * Modal for building an assessment with multiple question types.
+ * @param {boolean} open - Controls visibility.
+ * @param {Function} onClose - Closes the modal.
+ * @param {Function} onSave - Saves the assessment list.
+ * @param {Array} initialData - Preloaded questions.
+ */
 export default function AssessmentBuilderModal({
   open,
   onClose,
   onSave,
   initialData = [],
 }) {
+  const [assessmentList, setAssessmentList] = useState([]);
+  const [type, setType] = useState('multipleChoice');
+  const [questionData, setQuestionData] = useState({
+    question: '',
+    options: ['', '', ''],
+    correctIndex: 0,
+    wordLimit: 150,
+    imageUrl: '',
+  });
 
-const [assessmentList, setAssessmentList] = useState([]);
-const [type, setType] = useState('multipleChoice');
-const [questionData, setQuestionData] = useState({
-  question: '',
-  options: ['', '', ''],
-  correctIndex: 0,
-  wordLimit: 150,
-  imageUrl: '',
-});
-
-useEffect(() => {
-  if (open) {
-    setAssessmentList(initialData);
-
-    setQuestionData({
-      question: '',
-      options: ['', '', ''],
-      correctIndex: 0,
-      wordLimit: 150,
-      imageUrl: '',
-    });
-  }
-}, [open, initialData]);
+  useEffect(() => {
+    if (open) {
+      setAssessmentList(initialData);
+      setQuestionData({
+        question: '',
+        options: ['', '', ''],
+        correctIndex: 0,
+        wordLimit: 150,
+        imageUrl: '',
+      });
+    }
+  }, [open, initialData]);
 
   const isQuestionFilled = () => {
     const trimmed = questionData.question.trim();
     if (!trimmed) return false;
-
     if (type === 'multipleChoice') {
       return questionData.options.some(opt => opt.trim() !== '');
     }
@@ -45,7 +50,6 @@ useEffect(() => {
 
   const handleAddQuestion = () => {
     if (!isQuestionFilled()) return;
-
     setAssessmentList(prev => [...prev, { type, ...questionData }]);
     setQuestionData({
       question: '',
@@ -69,25 +73,23 @@ useEffect(() => {
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black bg-opacity-40 flex items-center justify-center">
-      <div className="bg-white p-6 rounded max-w-2xl w-full space-y-4 shadow-lg">
-        <h2 className="text-lg font-semibold">📋 Build Assessment</h2>
+    <div className={styles.overlay}>
+      <div className={styles.modal}>
+        <h2 className={styles.heading}>📋 Build Assessment</h2>
 
         {/* Question Type */}
         <label className="block text-sm font-medium">Question Type</label>
         <select
           value={type}
           onChange={(e) => setType(e.target.value)}
-          className="w-full border px-3 py-2 rounded"
+          className={styles.select}
         >
           {questionTypes.map((opt) => (
-            <option key={opt} value={opt}>
-              {opt}
-            </option>
+            <option key={opt} value={opt}>{opt}</option>
           ))}
         </select>
 
-        {/* Prompt */}
+        {/* Question Prompt */}
         <label className="block text-sm font-medium mt-2">Question Prompt</label>
         <input
           type="text"
@@ -95,7 +97,7 @@ useEffect(() => {
           onChange={(e) =>
             setQuestionData({ ...questionData, question: e.target.value })
           }
-          className="w-full border px-3 py-2 rounded"
+          className={styles.input}
         />
 
         {/* Multiple Choice Options */}
@@ -112,7 +114,7 @@ useEffect(() => {
                     updated[i] = e.target.value;
                     setQuestionData({ ...questionData, options: updated });
                   }}
-                  className="w-full border px-3 py-2 rounded"
+                  className={styles.input}
                 />
               </div>
             ))}
@@ -125,12 +127,10 @@ useEffect(() => {
                   correctIndex: parseInt(e.target.value),
                 })
               }
-              className="w-full border px-3 py-2 rounded"
+              className={styles.select}
             >
               {questionData.options.map((_, i) => (
-                <option key={i} value={i}>
-                  Option {i + 1}
-                </option>
+                <option key={i} value={i}>Option {i + 1}</option>
               ))}
             </select>
           </>
@@ -149,7 +149,7 @@ useEffect(() => {
                   wordLimit: parseInt(e.target.value),
                 })
               }
-              className="w-full border px-3 py-2 rounded"
+              className={styles.input}
             />
           </>
         )}
@@ -167,7 +167,7 @@ useEffect(() => {
                   imageUrl: e.target.value,
                 })
               }
-              className="w-full border px-3 py-2 rounded"
+              className={styles.input}
             />
             <label className="block text-sm font-medium mt-2">Scenario Description</label>
             <textarea
@@ -178,7 +178,7 @@ useEffect(() => {
                   question: e.target.value,
                 })
               }
-              className="w-full border px-3 py-2 rounded"
+              className={styles.textarea}
               rows={3}
             />
           </>
@@ -194,16 +194,10 @@ useEffect(() => {
             ➕ Add Question
           </button>
           <div className="flex gap-2">
-            <button
-              onClick={onClose}
-              className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
-            >
+            <button onClick={onClose} className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">
               Cancel
             </button>
-            <button
-              onClick={handleSave}
-              className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700"
-            >
+            <button onClick={handleSave} className={styles.button}>
               ✅ Save Assessment
             </button>
           </div>

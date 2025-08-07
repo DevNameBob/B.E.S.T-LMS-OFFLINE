@@ -16,6 +16,9 @@ import FacultyWelcomePanel from './FacultyWelcomePanel';
 import FacultyTabs from './FacultyTabs';
 import FacultyTabContent from './FacultyTabContent';
 
+// 🎨 Styles
+import styles from './FacultyDashboard.module.css';
+
 export default function FacultyDashboard() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [role, setRole] = useState('');
@@ -58,7 +61,7 @@ export default function FacultyDashboard() {
         <FacultyWelcomePanel title="Mr." name="WhoWho" />
         <button
           onClick={handleLogout}
-          className="absolute top-4 right-4 bg-white/80 text-red-600 hover:bg-white text-sm px-3 py-1 rounded-full shadow flex items-center gap-1 transition z-10"
+          className={styles.logoutButton}
         >
           <ArrowRightOnRectangleIcon className="w-4 h-4" />
           Logout

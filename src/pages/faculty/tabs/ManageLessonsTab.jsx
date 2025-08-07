@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import LessonExplorerInline from '../lesson-view/LessonExplorerInline';
+import styles from './ManageLessonsTab.module.css';
 
 const USE_BACKEND = false;
 
@@ -85,21 +86,18 @@ const ManageLessonsTab = () => {
   }, []);
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-xl font-semibold">Manage Lessons</h2>
-        <button
-          onClick={() => setShowModal(true)}
-          className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700"
-        >
+    <div className={styles.container}>
+      <div className={styles.header}>
+        <h2>Manage Lessons</h2>
+        <button onClick={() => setShowModal(true)} className={styles.createButton}>
           + Create Lesson
         </button>
       </div>
 
-      <table className="w-full text-sm border">
-        <thead className="bg-gray-100 text-left">
+      <table className={styles.table}>
+        <thead>
           <tr>
-            <th className="p-2">Title</th>
+            <th>Title</th>
             <th>Subject</th>
             <th>Grade</th>
             <th>Schedule</th>
@@ -109,17 +107,14 @@ const ManageLessonsTab = () => {
         </thead>
         <tbody>
           {lessons.map((lesson) => (
-            <tr key={lesson._id} className="border-t hover:bg-gray-50">
-              <td className="p-2">{lesson.title}</td>
+            <tr key={lesson._id}>
+              <td>{lesson.title}</td>
               <td>{lesson.subject}</td>
               <td>{lesson.grade}</td>
               <td>{lesson.schedule}</td>
               <td>{lesson.learners?.length || 0}</td>
               <td>
-                <button
-                  onClick={() => setSelectedLesson(lesson)}
-                  className="bg-indigo-100 text-indigo-700 px-3 py-1 rounded hover:bg-indigo-200 text-sm"
-                >
+                <button onClick={() => setSelectedLesson(lesson)} className={styles.viewButton}>
                   View Structure
                 </button>
               </td>
@@ -128,46 +123,35 @@ const ManageLessonsTab = () => {
         </tbody>
       </table>
 
+      {/* Modal: Lesson Viewer */}
       {selectedLesson && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white w-full max-w-5xl h-[80vh] rounded-lg shadow-lg overflow-hidden relative">
-            <button
-              onClick={() => setSelectedLesson(null)}
-              className="absolute top-3 right-3 text-gray-500 hover:text-black"
-            >
-              ✕
-            </button>
-
-            <div className="flex justify-between items-center px-6 py-4 border-b">
-              <h3 className="text-lg font-semibold">{selectedLesson.title}</h3>
+        <div className={styles.modalOverlay}>
+          <div className={styles.modal}>
+            <button onClick={() => setSelectedLesson(null)} className={styles.closeButton}>✕</button>
+            <div className={styles.modalHeader}>
+              <h3>{selectedLesson.title}</h3>
               <a
                 href={`/faculty/lessons/view/${selectedLesson._id}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sm text-indigo-600 hover:underline"
               >
                 View Full Page ↗
               </a>
             </div>
-
-            <div className="p-4 h-full overflow-y-auto">
+            <div className={styles.modalContent}>
               <LessonExplorerInline lessonId={selectedLesson._id} />
             </div>
           </div>
         </div>
       )}
 
+      {/* Modal: Create Lesson */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg w-full max-w-md relative">
-            <button
-              onClick={() => setShowModal(false)}
-              className="absolute top-2 right-2 text-gray-500 hover:text-black"
-            >
-              ✕
-            </button>
-            <h3 className="text-lg font-semibold mb-4">Create New Lesson</h3>
-            <form onSubmit={handleCreate} className="space-y-3">
+        <div className={styles.modalOverlay}>
+          <div className={styles.modal}>
+            <button onClick={() => setShowModal(false)} className={styles.closeButton}>✕</button>
+            <h3 className={styles.modalTitle}>Create New Lesson</h3>
+            <form onSubmit={handleCreate} className={styles.form}>
               {['title', 'subject', 'grade', 'schedule'].map((field) => (
                 <input
                   key={field}
@@ -175,7 +159,7 @@ const ManageLessonsTab = () => {
                   placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
                   value={form[field]}
                   onChange={(e) => setForm({ ...form, [field]: e.target.value })}
-                  className="border px-3 py-2 rounded w-full"
+                  className={styles.input}
                   required
                 />
               ))}
@@ -183,12 +167,9 @@ const ManageLessonsTab = () => {
                 placeholder="Description"
                 value={form.description}
                 onChange={(e) => setForm({ ...form, description: e.target.value })}
-                className="border px-3 py-2 rounded w-full"
+                className={styles.textarea}
               />
-              <button
-                type="submit"
-                className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 w-full"
-              >
+              <button type="submit" className={styles.submitButton}>
                 Create Lesson
               </button>
             </form>

@@ -5,6 +5,8 @@
 // including metrics like rating, hours taught, and feedback.
 // ==============================
 
+import styles from './Overview.module.css';
+
 /**
  * Overview displays a full-width performance summary for faculty.
  * It includes:
@@ -48,16 +50,13 @@ export default function Overview() {
   ];
 
   return (
-    <div className="bg-white rounded-xl shadow p-8 mt-6">
-      <h2 className="text-2xl font-bold text-gray-800 mb-6">Overview</h2>
+    <div className={styles.container}>
+      <h2 className={styles.title}>Overview</h2>
 
       {/* 📊 Metrics Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className={styles.metricsGrid}>
         {metrics.map((metric, index) => (
-          <div
-            key={index}
-            className="bg-indigo-50 rounded-lg p-6 shadow-sm hover:shadow-md transition"
-          >
+          <div key={index} className={styles.card}>
             <div className="text-3xl mb-2">{metric.icon}</div>
             <div className="text-2xl font-bold text-indigo-700">{metric.value}</div>
             <div className="text-sm font-medium text-gray-700 mt-1">{metric.label}</div>
@@ -67,11 +66,11 @@ export default function Overview() {
       </div>
 
       {/* 💬 Feedback Highlights */}
-      <div className="bg-gray-50 rounded-lg p-6 shadow-inner">
-        <h3 className="text-lg font-semibold text-gray-700 mb-4">Recent Learner Feedback</h3>
-        <ul className="space-y-3 text-sm text-gray-600">
+      <div className={styles.feedbackBox}>
+        <h3 className={styles.feedbackTitle}>Recent Learner Feedback</h3>
+        <ul className={styles.feedbackList}>
           {feedback.map((quote, i) => (
-            <li key={i} className="border-l-4 border-indigo-400 pl-4 italic">
+            <li key={i} className={styles.feedbackItem}>
               “{quote}”
             </li>
           ))}

@@ -1,0 +1,52 @@
+/* ==============================
+   📁 LessonExplorerInline.css
+   ==============================
+   Styles for the inline lesson editor layout.
+   Includes responsive sidebar and content panel.
+   ============================== */
+
+/* 📦 Container for sidebar + content */
+.inline-container {
+  display: flex;
+  flex-direction: row;
+  height: 60vh;
+  border: 1px solid #e5e7eb; /* Tailwind's border-gray-300 */
+  border-radius: 0.5rem;
+  overflow: hidden;
+  background-color: #ffffff;
+}
+
+/* 📚 Sidebar */
+.inline-sidebar {
+  width: 100%;
+  max-width: 300px;
+  background-color: #f9fafb; /* Tailwind's gray-50 */
+  padding: 1rem;
+  overflow-y: auto;
+  border-right: 1px solid #e5e7eb;
+}
+
+/* 📝 Content Panel */
+.inline-content {
+  flex: 1;
+  padding: 1.5rem;
+  overflow-y: auto;
+}
+
+/* 📱 Responsive layout */
+@media (max-width: 768px) {
+  .inline-container {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .inline-sidebar {
+    max-width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  .inline-content {
+    padding: 1rem;
+  }
+}

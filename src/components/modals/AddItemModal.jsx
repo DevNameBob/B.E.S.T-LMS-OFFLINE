@@ -1,5 +1,13 @@
 import React, { useState } from 'react';
+import styles from './Modal.module.css'; // Optional shared styles
 
+/**
+ * Modal for adding a single item (e.g. tag, label, name).
+ * @param {string} title - Modal heading.
+ * @param {string} placeholder - Input placeholder.
+ * @param {Function} onClose - Closes the modal.
+ * @param {Function} onSubmit - Submits the entered value.
+ */
 export default function AddItemModal({ title, placeholder, onClose, onSubmit }) {
   const [value, setValue] = useState('');
 
@@ -12,30 +20,20 @@ export default function AddItemModal({ title, placeholder, onClose, onSubmit }) 
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-      <div className="bg-white p-6 rounded-lg w-full max-w-sm relative">
-        <button
-          onClick={onClose}
-          className="absolute top-2 right-2 text-gray-500 hover:text-black"
-        >
-          ✕
-        </button>
-        <h3 className="text-lg font-semibold mb-4">{title}</h3>
+    <div className={styles.overlay}>
+      <div className={styles.modal}>
+        <button onClick={onClose} className={styles.closeButton}>✕</button>
+        <h3 className={styles.heading}>{title}</h3>
         <form onSubmit={handleSubmit} className="space-y-3">
           <input
             type="text"
             placeholder={placeholder}
             value={value}
             onChange={(e) => setValue(e.target.value)}
-            className="border px-3 py-2 rounded w-full"
+            className={styles.input}
             required
           />
-          <button
-            type="submit"
-            className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 w-full"
-          >
-            Add
-          </button>
+          <button type="submit" className={styles.button}>Add</button>
         </form>
       </div>
     </div>

@@ -1,5 +1,6 @@
 import styles from './ChatRoomList.module.css'; // ✅ Reuse room styles
 
+// 🧪 Mock direct messages for offline mode
 const mockDMs = [
   {
     id: 'dm1',
@@ -24,6 +25,10 @@ const mockDMs = [
   },
 ];
 
+/**
+ * Displays a list of direct message threads.
+ * @param {Function} onSelect - Callback when a DM is selected.
+ */
 export default function DirectMessageList({ onSelect }) {
   return (
     <div className={styles.container}>
@@ -34,11 +39,16 @@ export default function DirectMessageList({ onSelect }) {
             className={styles.roomItem}
             onClick={() => onSelect(dm.id)}
           >
+            {/* 🖼️ Avatar */}
             <img src={dm.avatar} alt={dm.name} className={styles.avatar} />
+
+            {/* 📝 DM Content */}
             <div className={styles.roomContent}>
               <div className={styles.roomName}>{dm.name}</div>
               <div className={styles.roomDescription}>{dm.lastMessage}</div>
             </div>
+
+            {/* 🕒 Timestamp */}
             <div className={styles.timestamp}>{dm.timestamp}</div>
           </li>
         ))}

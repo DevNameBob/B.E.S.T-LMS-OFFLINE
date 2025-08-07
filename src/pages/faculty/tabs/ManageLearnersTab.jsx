@@ -6,9 +6,9 @@ import {
   ArrowTrendingUpIcon,
   MagnifyingGlassIcon,
   XMarkIcon,
-  TrashIcon,
 } from '@heroicons/react/24/outline';
 import axiosInstance from '../../../api/axiosInstance';
+import styles from './ManageLearnersTab.module.css';
 
 const USE_BACKEND = false;
 
@@ -84,7 +84,6 @@ export default function ManageLearnersTab() {
       setLearners(mockLearners);
       return;
     }
-
     try {
       const res = await axiosInstance.get('/learners');
       setLearners(Array.isArray(res.data) ? res.data : []);
@@ -109,9 +108,7 @@ export default function ManageLearnersTab() {
     e.preventDefault();
     setLoading(true);
     setError('');
-
     const newLearner = { ...form, _id: Date.now().toString() };
-
     try {
       if (!USE_BACKEND) {
         setLearners((prev) => [...prev, newLearner]);
@@ -119,7 +116,6 @@ export default function ManageLearnersTab() {
         await axiosInstance.post('/learners', form);
         await fetchLearners();
       }
-
       setForm({
         name: '',
         email: '',
@@ -137,7 +133,6 @@ export default function ManageLearnersTab() {
         parentContact: '',
         parentEmail: '',
       });
-
       setShowModal(false);
       setStep(1);
     } catch (err) {
@@ -149,15 +144,13 @@ export default function ManageLearnersTab() {
 
   const handleDelete = async (id) => {
     if (!window.confirm('Are you sure you want to delete this learner?')) return;
-
     try {
       if (!USE_BACKEND) {
         setLearners((prev) => prev.filter((l) => l._id !== id));
       } else {
         await axiosInstance.delete(`/learners/${id}`);
-        setLearners((prev) => prev.filter((l) => l._id !== id));
+        await fetchLearners();
       }
-
       setExpandedId(null);
     } catch (err) {
       console.error('Failed to delete learner:', err);
@@ -169,40 +162,37 @@ export default function ManageLearnersTab() {
   );
 
   return (
-    <div className="space-y-10">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div className={styles.container}>
+      <div className={styles.summaryGrid}>
         <SummaryCard icon={<UserGroupIcon className="w-6 h-6" />} label="Total Learners" value={learners.length} />
         <SummaryCard icon={<UserPlusIcon className="w-6 h-6" />} label="New This Term" value="36" />
         <SummaryCard icon={<ArrowTrendingUpIcon className="w-6 h-6" />} label="Withdrawals" value="5" />
       </div>
 
       {!expandedId && (
-        <div className="bg-white rounded-xl shadow p-6">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-semibold text-gray-800">Manage Learners</h2>
-            <button
-              onClick={() => setShowModal(true)}
-              className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 transition"
-            >
+        <div className={styles.tableWrapper}>
+          <div className={styles.tableHeader}>
+            <h2>Manage Learners</h2>
+            <button onClick={() => setShowModal(true)} className={styles.primaryButton}>
               + Enrol New Learner
             </button>
           </div>
 
-          <div className="relative mb-4">
-            <MagnifyingGlassIcon className="w-5 h-5 absolute left-3 top-2.5 text-gray-400" />
+          <div className={styles.searchWrapper}>
+            <MagnifyingGlassIcon className={styles.searchIcon} />
             <input
               type="text"
               placeholder="Search learners..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-10 pr-4 py-2 border rounded w-full text-sm"
+              className={styles.searchInput}
             />
           </div>
 
-          <table className="w-full text-sm text-left">
-            <thead className="text-gray-600 border-b">
+          <table className={styles.table}>
+            <thead>
               <tr>
-                <th className="py-2">Name</th>
+                <th>Name</th>
                 <th>Email</th>
                 <th>Grade</th>
                 <th>Status</th>
@@ -212,20 +202,18 @@ export default function ManageLearnersTab() {
               {filtered.map((learner) => (
                 <tr
                   key={learner._id}
-                  className="border-b hover:bg-gray-50 cursor-pointer"
+                  className={styles.tableRow}
                   onClick={() => setExpandedId(learner._id)}
                 >
-                  <td className="py-2">{learner.name}</td>
+                  <td>{learner.name}</td>
                   <td>{learner.email}</td>
                   <td>{learner.grade}</td>
                   <td>
-                    <span
-                      className={`px-2 py-1 rounded text-xs font-medium ${
-                        learner.status === 'Active'
-                          ? 'bg-green-100 text-green-700'
-                          : 'bg-yellow-100 text-yellow-700'
-                      }`}
-                    >
+                    <span className={
+                      learner.status === 'Active'
+                        ? styles.statusActive
+                        : styles.statusInactive
+                    }>
                       {learner.status}
                     </span>
                   </td>
@@ -237,7 +225,7 @@ export default function ManageLearnersTab() {
       )}
 
       {expandedId && (
-        <div className="bg-white rounded-xl shadow p-6">
+        <div className={styles.tableWrapper}>
           <button
             onClick={() => {
               setExpandedId(null);
@@ -274,7 +262,9 @@ export default function ManageLearnersTab() {
                         type="password"
                         name="password"
                         value={editForm.password || ''}
-                        onChange={(e) => setEditForm({ ...editForm, password: e.target.value })}
+                        onChange={(e) =>
+                          setEditForm({ ...editForm, password: e.target.value })
+                        }
                         className="border px-2 py-1 rounded text-sm w-full mt-1"
                       />
                       <small className="text-gray-500 block">
@@ -284,126 +274,222 @@ export default function ManageLearnersTab() {
                   ) : (
                     <span className="italic text-gray-500">Hidden for security</span>
                   )
-                ) : isEditing ? (
-                  <input
-                    name={key}
-                    value={editForm[key] || ''}
-                    onChange={(e) => setEditForm({ ...editForm, [key]: e.target.value })}
-                    className="border px-2 py-1 rounded text-sm w-full mt-1"
-                  />
-                ) : (
-                  <span>{editForm[key] || '—'}</span>
-                )}
+                ) :                  isEditing ? (
+                    <input
+                      type="text"
+                      name={key}
+                      value={editForm[key] || ''}
+                      onChange={(e) =>
+                        setEditForm({ ...editForm, [key]: e.target.value })
+                      }
+                      className="border px-2 py-1 rounded text-sm w-full mt-1"
+                    />
+                  ) : (
+                    <span>{editForm[key]}</span>
+                  )}
               </div>
             ))}
+          </div>
 
-            <div className="flex gap-4 mt-4">
-              {isEditing ? (
-                <>
-                  <button
-                    onClick={async () => {
-                      if (!editForm._id) return console.error('No learner ID found');
-                      try {
-                        if (!USE_BACKEND) {
-                          setLearners((prev) =>
-                            prev.map((l) => (l._id === editForm._id ? { ...l, ...editForm } : l))
-                          );
-                        } else {
-                          await axiosInstance.put(`/learners/${editForm._id}`, editForm);
-                          await fetchLearners();
-                        }
-                        setIsEditing(false);
-                      } catch (err) {
-                        console.error('Failed to update learner:', err);
-                      }
-                    }}
-                    className="bg-green-600 text-white px-4 py-1 rounded hover:bg-green-700"
-                  >
-                    Save
-                  </button>
-                  <button
-                    onClick={() => setIsEditing(false)}
-                    className="text-gray-600 hover:underline"
-                  >
-                    Cancel
-                  </button>
-                </>
-              ) : (
-                <button
-                  onClick={() => setIsEditing(true)}
-                  className="text-indigo-600 hover:underline"
-                >
-                  Edit Profile
-                </button>
-              )}
+          <div className="mt-4 flex gap-2">
+            {!isEditing ? (
               <button
-                onClick={() => {
-                  if (!editForm._id) return console.error('No learner ID found');
-                  handleDelete(editForm._id);
-                }}
-                className="text-red-600 hover:underline"
+                onClick={() => setIsEditing(true)}
+                className={styles.primaryButton}
               >
-                Delete Learner
+                Edit Profile
               </button>
-            </div>
+            ) : (
+              <>
+                <button
+                  onClick={() => {
+                    setLearners((prev) =>
+                      prev.map((l) =>
+                        l._id === expandedId ? { ...l, ...editForm } : l
+                      )
+                    );
+                    setIsEditing(false);
+                  }}
+                  className={styles.primaryButton}
+                >
+                  Save Changes
+                </button>
+                <button
+                  onClick={() => setIsEditing(false)}
+                  className={styles.secondaryButton}
+                >
+                  Cancel
+                </button>
+              </>
+            )}
+            <button
+              onClick={() => handleDelete(expandedId)}
+              className={styles.dangerButton}
+            >
+              Delete Learner
+            </button>
           </div>
         </div>
       )}
 
-      {/* 🧾 Multi-Step Enrolment Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl shadow-lg p-6 w-full max-w-md relative">
-            <button
-              onClick={() => {
-                setShowModal(false);
-                setStep(1);
-              }}
-              className="absolute top-3 right-3 text-gray-400 hover:text-gray-600"
-            >
-              <XMarkIcon className="w-5 h-5" />
-            </button>
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">
-              {step === 1 ? 'Step 1: Learner Info' : 'Step 2: Parental Info'}
-            </h3>
+        <div className={styles.modalOverlay}>
+          <div className={styles.modal}>
+            <div className={styles.modalHeader}>
+              <h3>Enrol New Learner</h3>
+              <button onClick={() => setShowModal(false)}>
+                <XMarkIcon className="w-5 h-5 text-gray-500 hover:text-gray-700" />
+              </button>
+            </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {step === 1 ? (
+            <form onSubmit={handleSubmit} className={styles.modalForm}>
+              {step === 1 && (
                 <>
-                  <input type="text" placeholder="Full Name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required className="w-full border rounded px-3 py-2 text-sm" />
-                  <input type="email" placeholder="Email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required className="w-full border rounded px-3 py-2 text-sm" />
-                  <input type="password" placeholder="Password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} required className="w-full border rounded px-3 py-2 text-sm" />
-                  <small className="text-gray-500 block mb-2">
-                    This will be the learner’s login password. You can set it now or let them change it later.
-                  </small>
-                  <input type="text" placeholder="Grade (e.g. 10)" value={form.grade} onChange={(e) => setForm({ ...form, grade: e.target.value })} required className="w-full border rounded px-3 py-2 text-sm" />
-                  <input type="text" placeholder="Address" value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} className="w-full border rounded px-3 py-2 text-sm" />
-                  <input type="text" placeholder="Allergies" value={form.allergies} onChange={(e) => setForm({ ...form, allergies: e.target.value })} className="w-full border rounded px-3 py-2 text-sm" />
-                  <input type="text" placeholder="Medical Conditions" value={form.medicalConditions} onChange={(e) => setForm({ ...form, medicalConditions: e.target.value })} className="w-full border rounded px-3 py-2 text-sm" />
-                  <input type="text" placeholder="Emergency Contact Name" value={form.emergencyContactName} onChange={(e) => setForm({ ...form, emergencyContactName: e.target.value })} className="w-full border rounded px-3 py-2 text-sm" />
-                  <input type="text" placeholder="Emergency Contact Number" value={form.emergencyContactNumber} onChange={(e) => setForm({ ...form, emergencyContactNumber: e.target.value })} className="w-full border rounded px-3 py-2 text-sm" />
-                  <input type="text" placeholder="Medical Aid Info" value={form.medicalAid} onChange={(e) => setForm({ ...form, medicalAid: e.target.value })} className="w-full border rounded px-3 py-2 text-sm" />
-                  <button type="button" onClick={() => setStep(2)} className="w-full bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700 transition">
-                    Next: Parental Info →
-                  </button>
-                </>
-              ) : (
-                <>
-                  <input type="text" placeholder="Parent/Guardian Name" value={form.parentName} onChange={(e) => setForm({ ...form, parentName: e.target.value })} required className="w-full border rounded px-3 py-2 text-sm" />
-                  <input type="text" placeholder="Relationship" value={form.relationship} onChange={(e) => setForm({ ...form, relationship: e.target.value })} className="w-full border rounded px-3 py-2 text-sm" />
-                  <input type="text" placeholder="Parent Contact" value={form.parentContact} onChange={(e) => setForm({ ...form, parentContact: e.target.value })} className="w-full border rounded px-3 py-2 text-sm" />
-                  <input type="email" placeholder="Parent Email" value={form.parentEmail} onChange={(e) => setForm({ ...form, parentEmail: e.target.value })} className="w-full border rounded px-3 py-2 text-sm" />
-                  {error && <p className="text-red-500 text-sm">{error}</p>}
-                  <div className="flex justify-between gap-2">
-                    <button type="button" onClick={() => setStep(1)} className="w-1/2 bg-gray-200 text-gray-700 py-2 rounded hover:bg-gray-300 transition">
-                      ← Back
-                    </button>
-                    <button type="submit" disabled={loading} className="w-1/2 bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700 transition">
-                      {loading ? 'Enrolling...' : 'Finish Enrolment'}
-                    </button>
-                  </div>
+                  <label>Name</label>
+                  <input
+                    type="text"
+                    value={form.name}
+                    onChange={(e) => setForm({ ...form, name: e.target.value })}
+                    required
+                  />
+                  <label>Email</label>
+                  <input
+                    type="email"
+                    value={form.email}
+                    onChange={(e) => setForm({ ...form, email: e.target.value })}
+                    required
+                  />
+                  <label>Password</label>
+                  <input
+                    type="password"
+                    value={form.password}
+                    onChange={(e) => setForm({ ...form, password: e.target.value })}
+                    required
+                  />
+                  <label>Grade</label>
+                  <input
+                    type="text"
+                    value={form.grade}
+                    onChange={(e) => setForm({ ...form, grade: e.target.value })}
+                    required
+                  />
+                  <label>Status</label>
+                  <select
+                    value={form.status}
+                    onChange={(e) => setForm({ ...form, status: e.target.value })}
+                  >
+                    <option value="Active">Active</option>
+                    <option value="Inactive">Inactive</option>
+                  </select>
                 </>
               )}
+
+              {step === 2 && (
+                <>
+                  <label>Address</label>
+                  <input
+                    type="text"
+                    value={form.address}
+                    onChange={(e) => setForm({ ...form, address: e.target.value })}
+                  />
+                  <label>Allergies</label>
+                  <input
+                    type="text"
+                    value={form.allergies}
+                    onChange={(e) => setForm({ ...form, allergies: e.target.value })}
+                  />
+                  <label>Medical Conditions</label>
+                  <input
+                    type="text"
+                    value={form.medicalConditions}
+                    onChange={(e) =>
+                      setForm({ ...form, medicalConditions: e.target.value })
+                    }
+                  />
+                  <label>Emergency Contact Name</label>
+                  <input
+                    type="text"
+                    value={form.emergencyContactName}
+                    onChange={(e) =>
+                      setForm({ ...form, emergencyContactName: e.target.value })
+                    }
+                  />
+                  <label>Emergency Contact Number</label>
+                  <input
+                    type="text"
+                    value={form.emergencyContactNumber}
+                    onChange={(e) =>
+                      setForm({ ...form, emergencyContactNumber: e.target.value })
+                    }
+                  />
+                  <label>Medical Aid</label>
+                  <input
+                    type="text"
+                    value={form.medicalAid}
+                    onChange={(e) => setForm({ ...form, medicalAid: e.target.value })}
+                  />
+                </>
+              )}
+
+              {step === 3 && (
+                <>
+                  <label>Parent Name</label>
+                  <input
+                    type="text"
+                    value={form.parentName}
+                    onChange={(e) => setForm({ ...form, parentName: e.target.value })}
+                  />
+                  <label>Relationship</label>
+                  <input
+                    type="text"
+                    value={form.relationship}
+                    onChange={(e) => setForm({ ...form, relationship: e.target.value })}
+                  />
+                  <label>Parent Contact</label>
+                  <input
+                    type="text"
+                    value={form.parentContact}
+                    onChange={(e) => setForm({ ...form, parentContact: e.target.value })}
+                  />
+                  <label>Parent Email</label>
+                  <input
+                    type="email"
+                    value={form.parentEmail}
+                    onChange={(e) => setForm({ ...form, parentEmail: e.target.value })}
+                  />
+                </>
+              )}
+
+              {error && <p className={styles.error}>{error}</p>}
+
+              <div className={styles.modalFooter}>
+                {step > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => setStep((s) => s - 1)}
+                    className={styles.secondaryButton}
+                  >
+                    Back
+                  </button>
+                )}
+                {step < 3 ? (
+                  <button
+                    type="button"
+                    onClick={() => setStep((s) => s + 1)}
+                    className={styles.primaryButton}
+                  >
+                    Next
+                  </button>
+                ) : (
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className={styles.primaryButton}
+                  >
+                    {loading ? 'Submitting...' : 'Submit'}
+                  </button>
+                )}
+              </div>
             </form>
           </div>
         </div>

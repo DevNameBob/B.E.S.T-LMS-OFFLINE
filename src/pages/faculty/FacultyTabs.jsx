@@ -6,6 +6,7 @@
 // ==============================
 
 import { LockClosedIcon } from '@heroicons/react/24/solid';
+import styles from './FacultyTabs.module.css';
 
 /**
  * @param {string} activeTab - Currently selected tab key
@@ -34,13 +35,13 @@ export default function FacultyTabs({ activeTab, setActiveTab, role }) {
             key={tab.key}
             onClick={() => isAccessible && setActiveTab(tab.key)}
             disabled={!isAccessible}
-            className={`group relative px-4 py-1.5 rounded-full text-sm font-medium transition shadow-sm flex items-center gap-1
-              ${isAccessible
+            className={`${styles.tabButton} ${
+              isAccessible
                 ? isActive
-                  ? 'bg-indigo-600 text-white'
-                  : 'bg-indigo-100 text-indigo-700 hover:bg-indigo-200'
-                : 'bg-gray-100 text-gray-400 cursor-not-allowed'
-              }`}
+                  ? styles.active
+                  : styles.inactive
+                : styles.disabled
+            }`}
           >
             {/* 🔒 Lock icon for restricted tabs */}
             {!isAccessible && (
@@ -52,7 +53,7 @@ export default function FacultyTabs({ activeTab, setActiveTab, role }) {
 
             {/* 💬 Tooltip for restricted tabs */}
             {!isAccessible && tab.roles && (
-              <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition pointer-events-none z-10 whitespace-nowrap">
+              <span className={styles.tooltip}>
                 Restricted to: {tab.roles.join(', ')}
               </span>
             )}

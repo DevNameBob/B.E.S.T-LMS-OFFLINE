@@ -2,6 +2,11 @@ import React, { useState } from 'react';
 
 const USE_BACKEND = false;
 
+/**
+ * SidebarTree displays a nested curriculum structure:
+ * Terms → Topics → Lessons → Chapters.
+ * Supports selection, addition, and deletion of items.
+ */
 const SidebarTree = ({
   data = [],
   courseId,
@@ -15,23 +20,26 @@ const SidebarTree = ({
   const [selectedPath, setSelectedPath] = useState(null);
   const [modal, setModal] = useState(null);
 
+  // ✅ Check if a node is currently selected
   const isSelected = (type, indexes) =>
     selectedPath &&
     selectedPath.type === type &&
     JSON.stringify(selectedPath.indexes) === JSON.stringify(indexes);
 
+  // 📌 Handle item selection
   const handleClick = (type, indexes, item) => {
     setSelectedPath({ type, indexes });
     onSelectItem({ type, item, indexes });
   };
 
+  // ❌ Close modal
   const closeModal = () => setModal(null);
 
+  // 🗑️ Handle deletion (local or backend)
   const handleDelete = async () => {
     const { type, indexes } = modal;
 
     if (!USE_BACKEND) {
-      // Simulate deletion locally
       const updated = [...data];
 
       if (type === 'term') {
@@ -44,12 +52,11 @@ const SidebarTree = ({
         updated[indexes.termIndex].topics[indexes.topicIndex].lessons[indexes.lessonIndex].chapters.splice(indexes.chapterIndex, 1);
       }
 
-      refresh(updated); // Pass updated tree to parent
+      refresh(updated);
       closeModal();
       return;
     }
 
-    // Backend deletion
     let url = '';
 
     if (type === 'term') {
@@ -203,8 +210,8 @@ const SidebarTree = ({
         </div>
       ))}
 
-      {/* 🗑️ Delete Confirmation */}
-      {modal?.mode === 'delete' ? (
+      {/* 🗑️ Delete Confirmation Modal */}
+      {modal?.mode === 'delete' && (
         <div className="fixed inset-0 bg-black bg-opacity-40 z-50 flex items-center justify-center">
           <div className="bg-white p-6 rounded max-w-md w-full space-y-4">
             <h2 className="text-lg font-semibold">Confirm Deletion</h2>
@@ -227,7 +234,7 @@ const SidebarTree = ({
             </div>
           </div>
         </div>
-      ) : null}
+      )}
     </div>
   );
 };

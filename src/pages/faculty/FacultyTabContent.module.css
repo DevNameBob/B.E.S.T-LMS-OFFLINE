@@ -1,0 +1,7 @@
+/* ============================== */
+/* 🎨 FacultyTabContent.module.css */
+/* ============================== */
+
+.unauthorizedMessage {
+  @apply p-4 text-center text-gray-500;
+}

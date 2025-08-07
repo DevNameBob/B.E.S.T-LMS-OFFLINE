@@ -1,8 +1,12 @@
-// src/components/announcements/CreateAnnouncementForm/CreateAnnouncementForm.jsx
 import { useState } from 'react';
-import api from '../../../api/axiosInstance'; // ✅ updated import
+import api from '../../../api/axiosInstance';
 import styles from './CreateAnnouncementForm.module.css';
 
+/**
+ * Form for creating announcements. Only visible to 'admin' or 'faculty' roles.
+ * @param {Object} user - Current user object.
+ * @param {Function} onCreated - Callback after successful creation.
+ */
 export default function CreateAnnouncementForm({ user, onCreated }) {
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
@@ -25,13 +29,14 @@ export default function CreateAnnouncementForm({ user, onCreated }) {
     };
 
     try {
-      const res = await api.post('/announcements', payload); // ✅ uses conditional API
+      const res = await api.post('/announcements', payload);
       const newAnnouncement = res.data;
 
       if (onCreated && newAnnouncement?.title) {
         onCreated(newAnnouncement);
       }
 
+      // Reset form
       setTitle('');
       setBody('');
       setAudience('all');

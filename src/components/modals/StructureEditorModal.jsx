@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import styles from './Modal.module.css'; // ✅ Shared modal styles
 
 export default function StructureEditorModal({
   type = 'topic',
-  mode = 'create', // 'create' or 'edit'
+  mode = 'create',
   initialData = {},
   onClose,
   onSubmit
@@ -19,9 +20,10 @@ export default function StructureEditorModal({
       setTitle(initialData.title || '');
       setSummary(initialData.summary || '');
       setXp(initialData.xp || 0);
-      setQuestions(initialData.assessment?.length
-        ? initialData.assessment
-        : [{ question: '', options: ['', '', ''], correctIndex: 0 }]
+      setQuestions(
+        initialData.assessment?.length
+          ? initialData.assessment
+          : [{ question: '', options: ['', '', ''], correctIndex: 0 }]
       );
     }
   }, [initialData, mode]);
@@ -45,9 +47,9 @@ export default function StructureEditorModal({
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-40 z-50 flex items-center justify-center">
-      <div className="bg-white p-6 rounded max-w-lg w-full space-y-4">
-        <h2 className="text-lg font-semibold">
+    <div className={styles.overlay}>
+      <div className={styles.modal}>
+        <h2 className={styles.heading}>
           {mode === 'edit' ? `Edit ${type}` : `Add New ${type}`}
         </h2>
 
@@ -56,14 +58,14 @@ export default function StructureEditorModal({
           value={title}
           onChange={e => setTitle(e.target.value)}
           placeholder={`${type} title`}
-          className="w-full border px-3 py-2 rounded"
+          className={styles.input}
         />
 
         <textarea
           value={summary}
           onChange={e => setSummary(e.target.value)}
           placeholder="Summary"
-          className="w-full border px-3 py-2 rounded"
+          className={styles.textarea}
           rows={3}
         />
 
@@ -73,7 +75,7 @@ export default function StructureEditorModal({
             type="number"
             value={xp}
             onChange={e => setXp(e.target.value)}
-            className="w-20 border px-2 py-1 rounded"
+            className={`${styles.input} w-20 px-2 py-1`}
             min="0"
           />
         </div>
@@ -93,7 +95,7 @@ export default function StructureEditorModal({
                     setQuestions(updated);
                   }}
                   placeholder={`Question ${idx + 1}`}
-                  className="w-full border px-2 py-1 mb-2 rounded"
+                  className={styles.input}
                 />
                 {q.options.map((opt, optIdx) => (
                   <div key={optIdx} className="flex items-center gap-2 mb-1">
@@ -105,7 +107,7 @@ export default function StructureEditorModal({
                         setQuestions(updated);
                       }}
                       placeholder={`Option ${optIdx + 1}`}
-                      className="flex-1 border px-2 py-1 rounded"
+                      className={`${styles.input} flex-1`}
                     />
                     <label className="text-sm">
                       <input
@@ -127,11 +129,10 @@ export default function StructureEditorModal({
             <button
               type="button"
               onClick={() =>
-                setQuestions([...questions, {
-                  question: '',
-                  options: ['', '', ''],
-                  correctIndex: 0
-                }])
+                setQuestions([
+                  ...questions,
+                  { question: '', options: ['', '', ''], correctIndex: 0 }
+                ])
               }
               className="text-green-600 hover:underline text-sm"
             >
@@ -143,13 +144,13 @@ export default function StructureEditorModal({
         <div className="flex justify-end gap-2 mt-6">
           <button
             onClick={onClose}
-            className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
+            className={`${styles.button} ${styles.secondary}`}
           >
             Cancel
           </button>
           <button
             onClick={handleSubmit}
-            className="px-3 py-1 bg-indigo-600 text-white rounded hover:bg-indigo-700"
+            className={styles.button}
           >
             {mode === 'edit' ? 'Update' : 'Save'}
           </button>

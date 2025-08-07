@@ -1,5 +1,15 @@
+// ==============================
+// 📄 LessonExplorerInline.jsx
+// ==============================
+// Faculty-side inline lesson editor with full CRUD, preview, and modal support.
+// Responsive layout with sidebar and content panel.
+// ==============================
+
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import './LessonExplorerInline.css';
+
+// 🧩 Local Components
 import ChapterEditor from '../../../components/chapters/ChapterEditor';
 import ChapterContent from "../../../components/chapters/ChapterContent";
 import SidebarTree from '../../../components/navigation/SidebarTree';
@@ -9,6 +19,7 @@ import LessonEditorModal from '../../../components/Editors/LessonEditorModal';
 
 const USE_BACKEND = false;
 
+// 🧪 Mock lesson structure for dev/testing
 const mockLessonStructure = {
   _id: 'lesson1',
   title: 'Algebra Basics',
@@ -53,6 +64,7 @@ export default function LessonExplorerInline({ lessonId }) {
   const [showEditor, setShowEditor] = useState(false);
   const [modal, setModal] = useState(null);
 
+  // 📡 Fetch lesson structure (mock or API)
   const fetchLesson = async () => {
     if (!USE_BACKEND) {
       setLesson(mockLessonStructure);
@@ -71,6 +83,7 @@ export default function LessonExplorerInline({ lessonId }) {
     fetchLesson();
   }, [lessonId]);
 
+  // ➕ Add Chapter
   const handleAddChapter = async (chapter) => {
     try {
       const { termIndex, topicIndex, lessonIndex } = chapterContext;
@@ -96,6 +109,7 @@ export default function LessonExplorerInline({ lessonId }) {
     }
   };
 
+  // ✏️ Update Chapter
   const handleUpdateChapter = async (chapter) => {
     try {
       const { termIndex, topicIndex, lessonIndex, chapterIndex } = selectedItem || {};
@@ -122,6 +136,7 @@ export default function LessonExplorerInline({ lessonId }) {
     }
   };
 
+  // 🛠️ Modal Triggers
   const handleStartAddChapter = (termIndex, topicIndex, lessonIndex) => {
     setChapterContext({ termIndex, topicIndex, lessonIndex });
     setShowEditor(true);
@@ -176,6 +191,7 @@ export default function LessonExplorerInline({ lessonId }) {
     localStorage.removeItem('chapterDraft');
   };
 
+  // 🗑️ Delete Item
   const handleDelete = async () => {
     const { type, indexes } = modal;
 
@@ -217,6 +233,7 @@ export default function LessonExplorerInline({ lessonId }) {
     }
   };
 
+  // 💾 Save Term/Topic/Lesson
   const handleSave = async (data) => {
     const { mode, type, indexes } = modal;
 
@@ -246,7 +263,7 @@ export default function LessonExplorerInline({ lessonId }) {
       setLesson(updated);
       setModal(null);
       return;
-    }
+       }
 
     let url = '';
     if (type === 'term') {
@@ -278,9 +295,9 @@ export default function LessonExplorerInline({ lessonId }) {
   }
 
   return (
-    <div className="flex h-[60vh] border rounded overflow-hidden">
+    <div className="inline-container">
       {/* 📚 Sidebar */}
-      <div className="w-1/3 bg-gray-50 p-4 overflow-y-auto border-r">
+      <div className="inline-sidebar">
         <SidebarTree
           data={lesson.terms}
           courseId={lesson._id}
@@ -293,125 +310,125 @@ export default function LessonExplorerInline({ lessonId }) {
         />
       </div>
 
-      {/* 📝 Right Panel */}
-<div className="w-3/4 p-6 overflow-y-auto">
-  {showEditor ? (
-    <>
-      <ChapterEditor
-        onSave={editingChapter ? handleUpdateChapter : handleAddChapter}
-        initialData={
-          editingChapter || {
-            title: '',
-            summary: '',
-            content: '',
-            xp: 10,
-            assessment: [],
-          }
-        }
-      />
-      <button
-        onClick={exitEditor}
-        className="mt-4 px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
-      >
-        ← Exit Chapter View
-      </button>
-    </>
-  ) : activeChapter ? (
-    <div className="space-y-4">
-      <h2 className="text-xl font-semibold">{activeChapter.title}</h2>
-      <ChapterContent chapter={activeChapter} />
-      <button
-        onClick={() => setActiveChapter(null)}
-        className="mt-4 px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
-      >
-        ← Exit Chapter View
-      </button>
-    </div>
-  ) : selectedItem ? (
-    <div className="space-y-4">
-      <h2 className="text-xl font-semibold">{selectedItem.item.title}</h2>
-      <p className="text-gray-700 whitespace-pre-line">
-        {selectedItem.item.summary || 'No summary provided.'}
-      </p>
+      {/* 📝 Content Panel */}
+      <div className="inline-content">
+        {showEditor ? (
+          <>
+            <ChapterEditor
+              onSave={editingChapter ? handleUpdateChapter : handleAddChapter}
+              initialData={
+                editingChapter || {
+                  title: '',
+                  summary: '',
+                  content: '',
+                  xp: 10,
+                  assessment: [],
+                }
+              }
+            />
+            <button
+              onClick={exitEditor}
+              className="mt-4 px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
+            >
+              ← Exit Chapter View
+            </button>
+          </>
+        ) : activeChapter ? (
+          <div className="space-y-4">
+            <h2 className="text-xl font-semibold">{activeChapter.title}</h2>
+            <ChapterContent chapter={activeChapter} />
+            <button
+              onClick={() => setActiveChapter(null)}
+              className="mt-4 px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
+            >
+              ← Exit Chapter View
+            </button>
+          </div>
+        ) : selectedItem ? (
+          <div className="space-y-4">
+            <h2 className="text-xl font-semibold">{selectedItem.item.title}</h2>
+            <p className="text-gray-700 whitespace-pre-line">
+              {selectedItem.item.summary || 'No summary provided.'}
+            </p>
 
-      {selectedItem.item.assessment?.length > 0 && (
-        <div className="mt-4">
-          <h3 className="font-semibold text-gray-800">📋 Assessment</h3>
-          <ul className="list-disc pl-5 text-sm text-gray-700">
-            {selectedItem.item.assessment.map((q, idx) => (
-              <li key={idx}>
-                <strong>Q{idx + 1} ({q.type}):</strong> {q.question}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+            {selectedItem.item.assessment?.length > 0 && (
+              <div className="mt-4">
+                <h3 className="font-semibold text-gray-800">📋 Assessment</h3>
+                <ul className="list-disc pl-5 text-sm text-gray-700">
+                  {selectedItem.item.assessment.map((q, idx) => (
+                    <li key={idx}>
+                      <strong>Q{idx + 1} ({q.type}):</strong> {q.question}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
 
-      {['term', 'topic', 'lesson'].includes(selectedItem.type) && (
-        <div className="flex gap-2 mt-4">
-          <button
-            onClick={() =>
-              setModal({
-                mode: 'edit',
-                type: selectedItem.type,
-                indexes: selectedItem.indexes,
-                initialData: selectedItem.item,
-              })
-            }
-            className="px-4 py-2 text-sm bg-yellow-500 text-white rounded hover:bg-yellow-600"
-          >
-            Edit {selectedItem.type}
-          </button>
-          <button
-            onClick={() =>
-              setModal({
-                mode: 'delete',
-                type: selectedItem.type,
-                indexes: selectedItem.indexes,
-              })
-            }
-            className="px-4 py-2 text-sm bg-red-600 text-white rounded hover:bg-red-700"
-          >
-            Delete {selectedItem.type}
-          </button>
-        </div>
-      )}
+            {['term', 'topic', 'lesson'].includes(selectedItem.type) && (
+              <div className="flex gap-2 mt-4">
+                <button
+                  onClick={() =>
+                    setModal({
+                      mode: 'edit',
+                      type: selectedItem.type,
+                      indexes: selectedItem.indexes,
+                      initialData: selectedItem.item,
+                    })
+                  }
+                  className="px-4 py-2 text-sm bg-yellow-500 text-white rounded hover:bg-yellow-600"
+                >
+                  Edit {selectedItem.type}
+                </button>
+                <button
+                  onClick={() =>
+                    setModal({
+                      mode: 'delete',
+                      type: selectedItem.type,
+                      indexes: selectedItem.indexes,
+                    })
+                  }
+                  className="px-4 py-2 text-sm bg-red-600 text-white rounded hover:bg-red-700"
+                >
+                  Delete {selectedItem.type}
+                </button>
+              </div>
+            )}
 
-      {selectedItem.type === 'chapter' && (
-        <div className="flex gap-2 mt-4">
-          <button
-            onClick={() => handlePreviewChapter(selectedItem.item)}
-            className="px-4 py-2 text-sm bg-indigo-600 text-white rounded hover:bg-indigo-700"
-          >
-            Start Chapter
-          </button>
-          <button
-            onClick={() => handleEditChapter(selectedItem.item, selectedItem)}
-            className="px-4 py-2 text-sm bg-yellow-500 text-white rounded hover:bg-yellow-600"
-          >
-            Edit Chapter
-          </button>
-          <button
-            onClick={() =>
-              setModal({
-                mode: 'delete',
-                type: 'chapter',
-                indexes: selectedItem.indexes,
-              })
-            }
-            className="px-4 py-2 text-sm bg-red-600 text-white rounded hover:bg-red-700"
-          >
-            Delete Chapter
-          </button>
-        </div>
-      )}
-    </div>
-  ) : (
-    <p className="text-gray-500">
-      Select a term, topic, lesson, or chapter to view its summary.
-    </p>
-  )}
-</div>
+            {selectedItem.type === 'chapter' && (
+              <div className="flex gap-2 mt-4">
+                <button
+                  onClick={() => handlePreviewChapter(selectedItem.item)}
+                  className="px-4 py-2 text-sm bg-indigo-600 text-white rounded hover:bg-indigo-700"
+                >
+                  Start Chapter
+                </button>
+                <button
+                  onClick={() => handleEditChapter(selectedItem.item, selectedItem)}
+                  className="px-4 py-2 text-sm bg-yellow-500 text-white rounded hover:bg-yellow-600"
+                >
+                  Edit Chapter
+                </button>
+                <button
+                  onClick={() =>
+                    setModal({
+                      mode: 'delete',
+                      type: 'chapter',
+                      indexes: selectedItem.indexes,
+                    })
+                  }
+                  className="px-4 py-2 text-sm bg-red-600 text-white rounded hover:bg-red-700"
+                >
+                  Delete Chapter
+                </button>
+              </div>
+            )}
+          </div>
+        ) : (
+          <p className="text-gray-500">
+            Select a term, topic, lesson, or chapter to view its summary.
+          </p>
+        )}
+      </div>
 
       {/* 🧾 Modal Editors */}
       {modal?.mode === 'create' || modal?.mode === 'edit' ? (

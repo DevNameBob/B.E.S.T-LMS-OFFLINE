@@ -1,13 +1,18 @@
 import { useState } from 'react';
 import ChatRoomList from './ChatRoomList';
-import DirectMessageList from './DirectMessageList'; // You’ll create this next
+import DirectMessageList from './DirectMessageList';
 import styles from './ChatSwitcher.module.css';
 
+/**
+ * Tab switcher between group chat rooms and direct messages.
+ * @param {Function} onSelect - Callback when a room or DM is selected.
+ */
 export default function ChatSwitcher({ onSelect }) {
   const [activeTab, setActiveTab] = useState('rooms');
 
   return (
     <div className={styles.container}>
+      {/* 🧭 Tab Bar */}
       <div className={styles.tabBar}>
         <button
           className={`${styles.tab} ${activeTab === 'rooms' ? styles.active : ''}`}
@@ -23,6 +28,7 @@ export default function ChatSwitcher({ onSelect }) {
         </button>
       </div>
 
+      {/* 📄 Tab Content */}
       <div className={styles.content}>
         {activeTab === 'rooms' ? (
           <ChatRoomList onSelect={onSelect} />

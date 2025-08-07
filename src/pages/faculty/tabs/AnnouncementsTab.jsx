@@ -1,21 +1,32 @@
+// ==============================
+// 📄 AnnouncementsTab.jsx
+// ==============================
+// Faculty-side tabbed interface for announcements and chat.
+// Includes responsive tab toggle, announcement CRUD, and chat views.
+// ==============================
+
 import { useState, useEffect } from 'react';
-import api, { USE_BACKEND } from '../../../api/axiosInstance'; // ✅ use conditional API
+import api, { USE_BACKEND } from '../../../api/axiosInstance';
+
+// 🧩 Local Components
 import CreateAnnouncementForm from '../../../components/announcements/CreateAnnouncementForm/CreateAnnouncementForm';
 import AnnouncementList from '../../../components/announcements/AnnouncementList';
 import ChatRoomList from '../../../components/chat/ChatRoomList';
 import ChatRoomView from '../../../components/chat/ChatRoomView';
 import DirectMessageList from '../../../components/chat/DirectMessageList';
 import DirectMessageView from '../../../components/chat/DirectMessageView';
-import TabToggle from '../../../components/TabToggle';
+
 import styles from './AnnouncementsTab.module.css';
 
 export default function AnnouncementsTab() {
+  // 🧑 Mock user (replace with real auth context)
   const user = {
     _id: '123',
     name: 'John Doe',
     role: 'faculty', // or 'learner'
   };
 
+  // 🧠 State Management
   const [activeTab, setActiveTab] = useState('announcements');
   const [chatMode, setChatMode] = useState('rooms');
   const [selectedChatRoom, setSelectedChatRoom] = useState(null);
@@ -24,17 +35,20 @@ export default function AnnouncementsTab() {
   const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  // 🔁 Tab switch resets chat selections
   const handleTabChange = (tab) => {
     setActiveTab(tab);
     setSelectedChatRoom(null);
     setSelectedDMRoom(null);
   };
 
+  // 🔙 Back from chat views
   const handleBack = () => {
     setSelectedChatRoom(null);
     setSelectedDMRoom(null);
   };
 
+  // 📡 Fetch announcements from API or mock
   const fetchAnnouncements = async () => {
     try {
       const res = await api.get('/announcements');
@@ -52,15 +66,23 @@ export default function AnnouncementsTab() {
 
   return (
     <div className={styles.container}>
-      <TabToggle
-        activeTab={activeTab}
-        onTabChange={handleTabChange}
-        tabs={[
-          { key: 'announcements', label: 'Announcements', icon: '' },
-          { key: 'chat', label: 'Chat', icon: '' },
-        ]}
-      />
+      {/* 💻 Pill-style tab bar (always visible) */}
+      <div className={styles.tabBar}>
+        <button
+          className={`${styles.tabButton} ${activeTab === 'announcements' ? styles.activeTab : ''}`}
+          onClick={() => handleTabChange('announcements')}
+        >
+          📣 Announcements
+        </button>
+        <button
+          className={`${styles.tabButton} ${activeTab === 'chat' ? styles.activeTab : ''}`}
+          onClick={() => handleTabChange('chat')}
+        >
+          💬 Chat
+        </button>
+      </div>
 
+      {/* 📣 Announcements View */}
       {activeTab === 'announcements' ? (
         <>
           <div className={styles.header}>
@@ -96,6 +118,7 @@ export default function AnnouncementsTab() {
         </>
       ) : (
         <>
+          {/* 💬 Chat Sub-Tabs: Rooms vs Friends */}
           <div className={styles.subTabBar}>
             <button
               className={`${styles.subTab} ${chatMode === 'rooms' ? styles.active : ''}`}
@@ -119,6 +142,7 @@ export default function AnnouncementsTab() {
             </button>
           </div>
 
+          {/* 🧩 Chat Views */}
           {chatMode === 'rooms' ? (
             selectedChatRoom ? (
               <ChatRoomView room={selectedChatRoom} user={user} onBack={handleBack} />

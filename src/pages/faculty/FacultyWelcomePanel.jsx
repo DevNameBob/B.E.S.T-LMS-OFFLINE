@@ -14,6 +14,9 @@ import useAutoTab from '../../hooks/useAutoTab';
 // 🎨 Reusable gradient background wrapper
 import GradientBlock from '../../components/GradientBlock';
 
+// 🎨 Styles
+import styles from './FacultyWelcomePanel.module.css';
+
 /**
  * Welcome panel for faculty users.
  * Displays rotating announcements and a warm greeting.
@@ -60,24 +63,24 @@ export default function FacultyWelcomePanel({ name = 'WhoWho', title = 'Mr.' }) 
 
   return (
     <GradientBlock>
-      <div className="min-h-[360px] flex flex-col justify-center items-center text-white px-4">
+      <div className={styles.panel}>
         <div className="w-full max-w-7xl">
           {/* 👋 Welcome Message */}
-          <h1 className="text-4xl font-bold mb-2">
+          <h1 className={styles.heading}>
             Welcome Back, {title} {name}
           </h1>
-          <p className="text-white/90 mb-6 text-base">
+          <p className={styles.subtext}>
             Here’s what’s happening in your school day today:
           </p>
 
           {/* 🧾 Sliding Announcement Panel */}
-          <div className="backdrop-blur-md bg-white/30 rounded-xl p-6 w-full shadow-inner flex flex-col justify-between text-left">
+          <div className={styles.announcementBox}>
             <div className="space-y-3">
               {announcements[tabs[activeTab]].map((item, index) => (
                 <div
                   key={index}
                   onClick={handleClick}
-                  className="bg-white/60 p-3 rounded cursor-pointer hover:bg-white/80 transition"
+                  className={styles.announcementItem}
                 >
                   <p className="text-sm text-gray-800">{item}</p>
                 </div>
@@ -85,15 +88,13 @@ export default function FacultyWelcomePanel({ name = 'WhoWho', title = 'Mr.' }) 
             </div>
 
             {/* 🧭 Tab Navigation */}
-            <div className="flex justify-start mt-4 space-x-4">
+            <div className={styles.tabNav}>
               {tabs.map((tab, index) => (
                 <button
                   key={tab}
                   onClick={() => setActiveTab(index)}
-                  className={`text-xs font-medium px-3 py-1 rounded-full transition ${
-                    index === activeTab
-                      ? 'bg-white/80 text-gray-800'
-                      : 'text-white/70 hover:text-white'
+                  className={`${styles.tabButton} ${
+                    index === activeTab ? styles.activeTab : styles.inactiveTab
                   }`}
                 >
                   {tab}

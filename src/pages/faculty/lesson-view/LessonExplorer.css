@@ -1,0 +1,65 @@
+/* ==============================
+   📁 LessonExplorer.css
+   ==============================
+   Styles for the faculty-side lesson explorer layout.
+   Includes responsive sidebar and content panel.
+   ============================== */
+
+/* 📦 Container for sidebar + content */
+.lesson-container {
+  display: flex;
+  flex-direction: row;
+  height: 80vh;
+  border: 1px solid #e5e7eb; /* Tailwind's border-gray-300 */
+  border-radius: 0.5rem;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  background-color: #ffffff;
+}
+
+/* 📚 Sidebar with lesson structure */
+.sidebar {
+  width: 100%;
+  max-width: 300px;
+  background-color: #f3f4f6; /* Tailwind's gray-100 */
+  padding: 1rem;
+  overflow-y: auto;
+  border-right: 1px solid #e5e7eb;
+}
+
+/* 📖 Content panel for chapter display */
+.content-panel {
+  flex: 1;
+  padding: 1.5rem;
+  overflow-y: auto;
+}
+
+/* 🧾 Typography and spacing */
+.sidebar h2 {
+  font-size: 1.125rem; /* text-lg */
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #111827; /* Tailwind's gray-900 */
+}
+
+.content-panel p {
+  color: #6b7280; /* Tailwind's gray-500 */
+}
+
+/* 📱 Responsive layout for mobile */
+@media (max-width: 768px) {
+  .lesson-container {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .sidebar {
+    max-width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  .content-panel {
+    padding: 1rem;
+  }
+}

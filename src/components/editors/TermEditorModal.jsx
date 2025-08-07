@@ -3,6 +3,12 @@ import AssessmentBuilderModal from '../modals/AssessmentBuilderModal';
 
 const USE_BACKEND = false;
 
+/**
+ * Modal for editing a term's title, summary, and assessment.
+ * @param {Object} initialData - Existing term data.
+ * @param {Function} onSubmit - Callback to save changes.
+ * @param {Function} onClose - Callback to close modal.
+ */
 export default function TermEditorModal({ initialData = {}, onSubmit, onClose }) {
   const [title, setTitle] = useState(initialData.title || '');
   const [summary, setSummary] = useState(initialData.summary || '');
@@ -18,14 +24,7 @@ export default function TermEditorModal({ initialData = {}, onSubmit, onClose })
     };
 
     console.log('💾 Saving term:', updatedTerm);
-
-    if (!USE_BACKEND) {
-      onSubmit(updatedTerm); // Simulate local update
-    } else {
-      // Backend logic goes here if needed
-      onSubmit(updatedTerm);
-    }
-
+    onSubmit(updatedTerm);
     onClose();
   };
 

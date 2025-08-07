@@ -6,6 +6,7 @@ import { useAuth } from '../../context/AuthContext';
 
 const USE_BACKEND = false;
 
+// 🧪 Fallback mock rooms for offline mode
 const mockInitialRooms = [
   {
     _id: 'r1',
@@ -14,12 +15,17 @@ const mockInitialRooms = [
   },
 ];
 
+/**
+ * Displays a list of chat rooms and allows creating new ones.
+ * @param {Function} onSelect - Callback when a room is selected.
+ */
 export default function ChatRoomList({ onSelect }) {
   const { user } = useAuth();
   const [rooms, setRooms] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
 
+  // 📥 Fetch rooms from backend or localStorage
   const fetchRooms = async () => {
     if (!USE_BACKEND) {
       const stored = localStorage.getItem('mockRooms');
@@ -42,6 +48,7 @@ export default function ChatRoomList({ onSelect }) {
     fetchRooms();
   }, []);
 
+  // ✅ Handle new room creation
   const handleCreatedRoom = (newRoom) => {
     const updated = [...rooms, newRoom];
     setRooms(updated);
@@ -54,16 +61,19 @@ export default function ChatRoomList({ onSelect }) {
 
   return (
     <div className={styles.container}>
+      {/* ➕ Create Room Button */}
       <div className={styles.header}>
         <button className={styles.createButton} onClick={() => setShowForm(!showForm)}>
           {showForm ? 'Cancel' : '➕ Create Group'}
         </button>
       </div>
 
+      {/* 📝 Room Creation Form */}
       {showForm && user && (
         <CreateRoomForm user={user} onCreated={handleCreatedRoom} />
       )}
 
+      {/* 📋 Room List */}
       {loading ? (
         <p>Loading rooms...</p>
       ) : rooms.length === 0 ? (

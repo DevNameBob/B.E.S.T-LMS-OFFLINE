@@ -4,6 +4,11 @@ import styles from './CreateRoomForm.module.css';
 
 const USE_BACKEND = false;
 
+/**
+ * Form for creating a new chat room.
+ * @param {Object} user - Current user.
+ * @param {Function} onCreated - Callback after room is created.
+ */
 export default function CreateRoomForm({ user, onCreated }) {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -23,6 +28,7 @@ export default function CreateRoomForm({ user, onCreated }) {
       createdBy: user?._id || 'offline-user',
     };
 
+    // 🧪 Offline mode
     if (!USE_BACKEND) {
       const mockRoom = {
         _id: Date.now().toString(),
@@ -36,9 +42,10 @@ export default function CreateRoomForm({ user, onCreated }) {
       onCreated?.(mockRoom);
       resetForm();
       setIsLoading(false);
-      return;
+           return;
     }
 
+    // 🌐 Backend mode
     try {
       const res = await axiosInstance.post('/chat/rooms', payload);
       onCreated?.(res.data);
@@ -51,6 +58,7 @@ export default function CreateRoomForm({ user, onCreated }) {
     }
   };
 
+  // 🔄 Reset form fields
   const resetForm = () => {
     setName('');
     setDescription('');
@@ -61,8 +69,10 @@ export default function CreateRoomForm({ user, onCreated }) {
     <form className={styles.form} onSubmit={handleSubmit}>
       <h3>Create New Group</h3>
 
+      {/* ⚠️ Error Message */}
       {error && <p className={styles.error}>{error}</p>}
 
+      {/* 📝 Room Name */}
       <input
         type="text"
         placeholder="Room name"
@@ -72,6 +82,7 @@ export default function CreateRoomForm({ user, onCreated }) {
         disabled={isLoading}
       />
 
+      {/* 📄 Description */}
       <textarea
         placeholder="Description"
         value={description}
@@ -80,6 +91,7 @@ export default function CreateRoomForm({ user, onCreated }) {
         disabled={isLoading}
       />
 
+      {/* 🔐 Access Level */}
       <label>
         Access:
         <select
@@ -93,6 +105,7 @@ export default function CreateRoomForm({ user, onCreated }) {
         </select>
       </label>
 
+      {/* ✅ Submit Button */}
       <button type="submit" disabled={isLoading}>
         {isLoading ? (
           <span className={styles.spinner} aria-label="Loading" />

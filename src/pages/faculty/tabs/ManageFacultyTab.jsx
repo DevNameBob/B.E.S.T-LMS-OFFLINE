@@ -6,7 +6,7 @@ import {
   ArrowTrendingUpIcon,
   MagnifyingGlassIcon,
   EyeIcon,
-  EyeSlashIcon
+  EyeSlashIcon,
 } from '@heroicons/react/24/outline';
 
 const ManageFacultyTab = () => {
@@ -25,9 +25,10 @@ const ManageFacultyTab = () => {
     role: '',
     phone: '',
     subject: '',
-    bio: ''
+    bio: '',
   });
 
+  // 🔄 Load faculty from localStorage or seed
   const fetchFaculty = () => {
     const cached = localStorage.getItem('facultyCache');
     if (cached) {
@@ -41,14 +42,15 @@ const ManageFacultyTab = () => {
           role: 'educator',
           phone: '0821234567',
           subject: 'Mathematics',
-          bio: 'Passionate about numbers and nurturing minds.'
-        }
+          bio: 'Passionate about numbers and nurturing minds.',
+        },
       ];
       localStorage.setItem('facultyCache', JSON.stringify(seed));
       setFaculty(seed);
     }
   };
 
+  // 💾 Update faculty profile
   const handleUpdate = () => {
     const updated = { ...editForm };
     if (newPassword) updated.password = newPassword;
@@ -63,6 +65,7 @@ const ManageFacultyTab = () => {
     setNewPassword('');
   };
 
+  // ❌ Delete faculty member
   const handleDelete = (id) => {
     if (!window.confirm('Are you sure you want to delete this faculty member?')) return;
     const cached = localStorage.getItem('facultyCache');
@@ -73,6 +76,7 @@ const ManageFacultyTab = () => {
     setExpandedId(null);
   };
 
+  // ➕ Hire new faculty
   const handleHire = (e) => {
     e.preventDefault();
     const cached = localStorage.getItem('facultyCache');
@@ -88,7 +92,7 @@ const ManageFacultyTab = () => {
       role: '',
       phone: '',
       subject: '',
-      bio: ''
+      bio: '',
     });
     setShowModal(false);
   };
@@ -244,7 +248,7 @@ const ManageFacultyTab = () => {
                       className="bg-green-600 text-white px-4 py-1 rounded hover:bg-green-700"
                     >
                       Save
-                                       </button>
+                    </button>
                     <button
                       onClick={() => {
                         setIsEditing(false);
